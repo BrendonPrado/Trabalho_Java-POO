@@ -6,10 +6,73 @@
 package sqlite;
 
 import classes.Produto;
+import classes.Venda;
 import java.sql.*;
 import java.util.ArrayList;
+import trabalho.Vendas;
 
 public class tabela {
+    
+    public void cria_venda() throws ClassNotFoundException{
+        Connection c = null;
+         Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\db\\Vendas.db");
+            System.out.println("Opened database successfully");
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE Vendas" +
+                        "( ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        " Nome Text NOT NULL,"+
+                        " DATA Text NOT NULL," + 
+                        " Total REAL NOT NULL," +
+                        "Lucro REAL NOT NULL,"
+                    + "Coment Text)"; 
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+                    
+        } catch (SQLException e) {
+               System.out.println(""+e);
+        }
+    }
+    public ArrayList<Venda> select_vendas(){
+        ArrayList<Venda> l = new ArrayList<>();
+        Connection c =null;
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\db\\Vendas.db");
+            System.out.println("Opened database successfully");
+            c.setAutoCommit(false);
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Vendas;" );
+            
+            while(rs.next()){
+                int id = rs.getInt("ID");
+                String prod = rs.getString("Nome");
+                String data = rs.getString("DATA");
+                double total = rs.getDouble("Total");
+                double lucro = rs.getDouble("Lucro");
+                String coment = rs.getString("Coment");
+                Venda v = new Venda(id,prod, data, total, lucro,coment);
+                l.add(v);  
+            }
+            c.commit();
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch (Exception e) {
+            System.out.println(""+e);                  
+        }
+        
+        return l;
+    }
+
+
+
+    
+    
     public void cria() throws ClassNotFoundException{
     	 Connection c = null;
          Statement stmt = null;
@@ -32,7 +95,7 @@ public class tabela {
         }
     }
     
-    public void insert(String name,double preço_u,int qtd) throws SQLException, ClassNotFoundException{
+    public void insert(String name,double preco_u,int qtd) throws SQLException, ClassNotFoundException{
     	Connection c = null;
         Statement stmt = null;
         try {
@@ -50,10 +113,10 @@ public class tabela {
             		stmt.close();
             		c.commit();
             		c.close();
-            		update(name,preço_u,qtd);
+            		update(name,preco_u,qtd);
             	}else{
             		String code = "INSERT INTO Estoque(NAME,Preco_u,qtd) " +
-         	                    "VALUES ('"+name+"',"+preço_u+","+qtd+");";
+         	                    "VALUES ('"+name+"',"+preco_u+","+qtd+");";
          	        stmt.executeUpdate(code);
          	        
          	        stmt.close();
@@ -62,7 +125,7 @@ public class tabela {
             		}	        
             }else {
 	        String code = "INSERT INTO Estoque(NAME,Preco_u,qtd) " +
-	                    "VALUES ('"+name+"',"+preço_u+","+qtd+");";
+	                    "VALUES ('"+name+"',"+preco_u+","+qtd+");";
 	        stmt.executeUpdate(code);
 	        
 	        stmt.close();
@@ -72,7 +135,7 @@ public class tabela {
             }           
         	catch (SQLException e) {
         		 String code = "INSERT INTO Estoque(NAME,Preco_u,qtd) " +
- 	                    "VALUES ('"+name+"',"+preço_u+","+qtd+");";
+ 	                    "VALUES ('"+name+"',"+preco_u+","+qtd+");";
  	        stmt.executeUpdate(code);
  	        
  	        stmt.close();
@@ -80,7 +143,7 @@ public class tabela {
  	        c.close();
         }
     }
-    private void update(String name, double preço_u, int qtd) {
+    public void update(String name, double preco_u, int qtd) {
     	   Connection c = null;
     	   Statement stmt = null;  
     	   try {
@@ -95,7 +158,7 @@ public class tabela {
     	      int q_n = rs.getInt("qtd");
     	   
     	      
-    	      String sql = "UPDATE Estoque set NAME ='"+name+"', Preco_u ="+preço_u+",qtd ="+(q_n+qtd)+" where NAME='"+name+"';";
+    	      String sql = "UPDATE Estoque set NAME ='"+name+"', Preco_u ="+preco_u+",qtd ="+(q_n+qtd)+" where NAME='"+name+"';";
     	      stmt.executeUpdate(sql);
     	      
     	   
@@ -140,4 +203,74 @@ public class tabela {
         System.out.println("chegamos");
         return l;
     }
+
+
+    public void insert_v(String nome, String data, double total, double lucro) throws ClassNotFoundException {
+        Connection c = null;
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\db\\Vendas.db");
+            c.setAutoCommit(false);
+            String code = "INSERT INTO Vendas(Nome,DATA,Total,Lucro)"
+                    + "VALUES('"+nome+"','"+data+"'," + total + "," + lucro +");";
+            stmt = c.createStatement();
+            stmt.executeUpdate(code);
+
+            stmt.close();
+            c.commit();
+            c.close();
+           
+            System.out.println("Opened database successfully");
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+    public void update_venda(String id, String coment){
+           Connection c = null;
+    	   Statement stmt = null;  
+    	   try {
+              System.out.println("updando");
+    	      Class.forName("org.sqlite.JDBC");
+    	      c = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\db\\Vendas.db");
+    	      System.out.println("Opened database successfully");
+    	      stmt = c.createStatement();
+    	      String sql;
+              sql = "UPDATE Vendas set Coment = '"+coment+"' where ID = "+id+";";
+
+    	      stmt.executeUpdate(sql);
+    	      
+    	   
+    	      stmt.close();
+    	      c.close();
+    	   }
+    	      catch ( Exception e ) {
+    	    	  System.out.println(e);
+    	      }
+	}
+   public ArrayList<Venda> lucra() throws ClassNotFoundException{
+        ArrayList<Venda> l = new ArrayList<>();
+        Connection c = null;
+        Statement stmt = null;
+        try {
+             Class.forName("org.sqlite.JDBC");
+             c = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\db\\Vendas.db");
+             System.out.println("Opened database successfully");
+             stmt = c.createStatement();
+             
+             ResultSet rs = stmt.executeQuery("Select Nome,sum(Lucro) from Vendas GROUP BY Nome ORDER BY Lucro Desc;" );
+             while(rs.next()){
+                 String nome = rs.getString("Nome");
+                 double lucro = rs.getDouble("sum(Lucro)");
+                 Venda v = new Venda(nome,lucro);
+                 l.add(v);
+             }
+             c.close();
+             stmt.close();
+             rs.close();
+        }catch(SQLException e){
+            System.out.println(e);
+        }
+        return l;
+   }
 }

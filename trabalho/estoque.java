@@ -5,13 +5,22 @@
  */
 package trabalho;
 import com.sun.org.apache.bcel.internal.generic.AALOAD;
-
 import classes.Produto;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import sqlite.tabela;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+   
 /**
  *
  * @author brend
@@ -35,6 +44,7 @@ public class estoque extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -49,27 +59,31 @@ public class estoque extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nome", "Qtd", "Pre�o"
+                "ID", "Nome", "Qtd", "Preço"
             }
-        ));
-        ArrayList<Produto> p = new tabela().select();
-        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-        int i =0;
-        while(i<p.size()) {
-        modelo.addRow(new String []{Integer.toString(p.get(i).getId()),p.get(i).getNome(),Integer.toString(p.get(i).getQtd()),Double.toString(p.get(i).getValor())});
-        i++;
-        }
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
 
-        jButton1.setText("Voltar");
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+        jTable1.getAccessibleContext().setAccessibleName("");
+
+        jButton2.setText("Voltar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Fazer .xls");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try {
-					jButton1ActionPerformed(evt);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -77,35 +91,59 @@ public class estoque extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(207, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 166, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(41, 41, 41))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-   
+        ArrayList<Produto> p = new tabela().select();
+        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+        int i =0;
+        while(i<p.size()) {
+        modelo.addRow(new String []{Integer.toString(p.get(i).getId()),p.get(i).getNome(),Integer.toString(p.get(i).getQtd()),Double.toString(p.get(i).getValor())});
+        i++;
+        }
     }//GEN-LAST:event_formWindowActivated
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) throws ClassNotFoundException {//GEN-FIRST:event_jButton1ActionPerformed
-        new menu().setVisible(true);
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            new menu().setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(estoque.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            estoque_xls();
+        } catch (IOException ex) {
+            Logger.getLogger(estoque.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -145,7 +183,52 @@ public class estoque extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
+
+    private void estoque_xls() throws IOException {
+        String file = "estoque.xls";
+        
+       
+        int i = 0;
+        HSSFWorkbook workbook = new HSSFWorkbook(); 
+        HSSFSheet sheetEstoque = workbook.createSheet("Estoque");
+        ArrayList<Produto> p = new tabela().select();
+         Row r = sheetEstoque.createRow(i++);
+            int cell = 0;
+            Cell cellID = r.createCell(cell++);
+            cellID.setCellValue("ID");
+            
+            Cell cellNome = r.createCell(cell++);
+            cellNome.setCellValue("Nome");
+            
+            Cell cellQtd = r.createCell(cell++);
+            cellQtd.setCellValue("Quantidade");
+            
+            Cell cellPreço = r.createCell(cell++);
+            cellPreço.setCellValue("Valor Unitário");   
+ 
+        for (Produto produto : p) {
+            r = sheetEstoque.createRow(i++);
+            cell=0;
+            cellID = r.createCell(cell++);
+            cellID.setCellValue(produto.getId());
+            
+            cellNome = r.createCell(cell++);
+            cellNome.setCellValue(produto.getNome());
+            
+            cellQtd = r.createCell(cell++);
+            cellQtd.setCellValue(produto.getQtd());
+            
+            cellPreço = r.createCell(cell++);
+            cellPreço.setCellValue(produto.getValor());   
+        }
+        FileOutputStream out = new FileOutputStream(new File(file));
+        workbook.write(out);
+        out.close();
+        System.out.println("Arquivo Excel criado com sucesso!");
+   
+    }
 }

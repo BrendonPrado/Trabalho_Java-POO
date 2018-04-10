@@ -8,6 +8,9 @@ package trabalho;
 import java.util.ArrayList;
 
 import classes.Produto;
+import classes.Venda;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import sqlite.tabela;
 
 /**
@@ -44,6 +47,11 @@ public class menu extends javax.swing.JFrame {
         label3 = new java.awt.Label();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
 
         jButton1.setText("Informações de Estoque");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -53,6 +61,11 @@ public class menu extends javax.swing.JFrame {
         });
 
         jButton2.setText("Ranking");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Realizar venda");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -69,6 +82,11 @@ public class menu extends javax.swing.JFrame {
         });
 
         jButton6.setText("Recomendações");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         label1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         label1.setText("Produto");
@@ -119,7 +137,7 @@ public class menu extends javax.swing.JFrame {
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(45, 45, 45)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -130,7 +148,7 @@ public class menu extends javax.swing.JFrame {
                 .addGroup(layout.createSequentialGroup()
                     .addGap(151, 151, 151)
                     .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(231, Short.MAX_VALUE)))
+                    .addContainerGap(249, Short.MAX_VALUE)))
         );
 
         pack();
@@ -150,6 +168,37 @@ public class menu extends javax.swing.JFrame {
     	this.setVisible(false);
     	new Vendas().setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+     ArrayList<Produto> p = new tabela().select();
+     ArrayList<Venda> v = new tabela().select_vendas();
+        System.out.println(v.size());
+            
+     if(p.size()==0){
+         try {
+             new tabela().cria();
+         } catch (ClassNotFoundException ex) {
+             Logger.getLogger(menu.class.getName()).log(Level.SEVERE, null, ex);
+         }
+     }if(v.size()==0){
+         try {
+             new tabela().cria_venda();
+         } catch (ClassNotFoundException ex) {
+             Logger.getLogger(menu.class.getName()).log(Level.SEVERE, null, ex);
+         }
+     }
+     
+    }//GEN-LAST:event_formWindowActivated
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        new Ranking().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        new Recomendações().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,7 +239,6 @@ public class menu extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

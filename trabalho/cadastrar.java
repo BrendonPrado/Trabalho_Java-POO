@@ -7,6 +7,7 @@ package trabalho;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.awt.*;
 import sqlite.tabela;
 /**
  *
@@ -151,8 +152,10 @@ public class cadastrar extends javax.swing.JFrame {
         } catch (Exception e) {
         	
         }
-            
-        }
+            textField1.setText("");
+            textField2.setText("");
+            textField3.setText("");
+           }
 //GEN-LAST:event_jButton2ActionPerformed
 
     private void textField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField1ActionPerformed
